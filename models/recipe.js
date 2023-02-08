@@ -41,25 +41,65 @@ class Recipe {
 
    /** Find all recipes
     * 
-    * searchFilters?
+    * searchFilters (all optional):
+    * - title (case-insensitive, partial matches)
+    * - cuisine
+    * - ingredient (case-insensitive, partial matches)
     * 
     * Returns [{title, cuisine, ingredients, instructions, notes, username }]
     */
-   static async findAll() {
-      const result = await db.query(
-         `SELECT 
-            id,
-            title,
-            cuisine,
-            ingredients,
-            instructions,
-            notes,
-            username
-         FROM recipes`
-      );
+   static async findAll(searchFilters = {}) {
+      let query = `SELECT id,
+                          title,
+                          cuisine,
+                          ingredients,
+                          instructions,
+                          notes,
+                          username
+                  FROM recipes`
+      let whereExpressions = [];
+      let queryValues = [];
 
-      const recipes = result.rows;
-      return recipes;
+      const { title, cuisine, ingredient } = searchFilters;
+
+      if (title) {
+         queryValues.push(`%${title}%`);
+         whereExpressions.push(`title ILIKE $${queryValues.length}`);
+      }
+
+      if (cuisine) {
+         queryValues.push(`%${cuisine}%`);
+         whereExpressions.push(`cuisine ILIKE $${queryValues.length}`);
+      }
+
+      if (ingredient) {
+         queryValues.push(`%${ingredient}%`);
+         whereExpressions.push(`ingredients ILIKE $${queryValues.length}`);
+      }
+
+      if (whereExpressions.length > 0) {
+         query += " WHERE " + whereExpressions.join(" AND ");
+      }
+
+      query += " ORDER BY title";
+      console.log(query, queryValues)
+      const recipesRes = await db.query(query, queryValues);
+      return recipesRes.rows;
+
+      // const result = await db.query(
+      //    `SELECT 
+      //       id,
+      //       title,
+      //       cuisine,
+      //       ingredients,
+      //       instructions,
+      //       notes,
+      //       username
+      //    FROM recipes`
+      // );
+
+      // const recipes = result.rows;
+      // return recipes;
    }
 
    /** Update recipe 

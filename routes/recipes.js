@@ -31,8 +31,9 @@ router.post("/", async function (req, res, next) {
 /** GET / => {recipes: [{ title, cuisine, ingredients, instructions, notes, username }...]} 
 */
 router.get("/", async function (req, res, next) {
+   const q = req.query;
    try {
-      const recipes = await Recipe.findAll()
+      const recipes = await Recipe.findAll(q)
       return res.json({ recipes })
    } catch (err) {
       return next(err)
