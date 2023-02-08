@@ -48,6 +48,7 @@ class Recipe {
    static async findAll() {
       const result = await db.query(
          `SELECT 
+            id,
             title,
             cuisine,
             ingredients,
@@ -90,6 +91,24 @@ class Recipe {
       return recipe;
    }
 
+   /** Delete recipe from database
+    * 
+    * returns undefined.
+    * 
+    * Throws NotFoundError if recipe not found
+    */
+   static async remove(id) {
+      const result = await db.query(
+         `DELETE 
+         FROM recipes
+         WHERE id = $1
+         RETURNING id`,
+         [id]
+      );
+      const recipe = result.rows[0];
+
+      if (!recipe) throw new NotFoundError(`No recipe: ${id}`)
+   }
 }
 
 module.exports = Recipe;

@@ -5,6 +5,7 @@ const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 
 const Recipe = require("../models/recipe")
 const recipeUpdateSchema = require("../schemas/recipeUpdate.json")
+const recipeNewSchema = require("../schemas/recipeNew.json")
 
 /** POST / {recipe} => {recipe} 
  * 
@@ -12,8 +13,13 @@ const recipeUpdateSchema = require("../schemas/recipeUpdate.json")
  * 
  * Returns { title, cuisine, ingredients, instructions, notes, username }
 */
-router.post("/add", async function (req, res, next) {
+router.post("/", async function (req, res, next) {
    try {
+      const validator = jsonschema.validate(req.body, recipeNewSchema);
+      if (!validator.valid) {
+         const errs = validator.errors.map(e => e.stack);
+         throw new BadRequestError(errs)
+      }
       const recipe = await Recipe.create(req.body)
       // console.log(recipe)
       return res.status(201).json({ recipe })
@@ -45,13 +51,26 @@ router.get("/", async function (req, res, next) {
 
 router.patch("/:id", async function (req, res, next) {
    try {
-      const validator = jsonschema.validate(req.body, recipeUpdateSchema)
+      const validator = jsonschema.validate(req.body, recipeUpdateSchema);
       if (!validator.valid) {
          const errs = validator.errors.map(e => e.stack);
-         throw new BadRequestError(errs)
+         throw new BadRequestError(errs);
       }
-      const recipe = await Recipe.update(req.params.id, req.body)
-      return res.json({ recipe })
+      const recipe = await Recipe.update(req.params.id, req.body);
+      return res.json({ recipe });
+   } catch (err) {
+      return next(err)
+   }
+})
+
+/** DELETE /[id] => {deleted: id} 
+ * 
+ * 
+*/
+router.delete("/:id", async function (req, res, next) {
+   try {
+      await Recipe.remove(req.params.id);
+      return res.json({ deleted: req.params.id });
    } catch (err) {
       return next(err)
    }

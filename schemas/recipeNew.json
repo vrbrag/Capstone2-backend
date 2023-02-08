@@ -1,0 +1,36 @@
+{
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "$id": "http://our.recipe.com/recipeNew.schema.json",
+   "type": "object",
+   "properties": {
+      "title": {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 65
+      },
+      "cuisine": {
+         "type": "string"
+      },
+      "ingredients": {
+         "type": "string",
+         "minLength": 1
+      },
+      "instructions": {
+         "type": "string"
+      },
+      "notes": {
+         "type": "string"
+      },
+      "username": {
+         "type": "string"
+      }
+   },
+   "additionalProperties": false,
+   "required": [
+      "title",
+      "cuisine",
+      "ingredients",
+      "instructions",
+      "username"
+   ]
+}
