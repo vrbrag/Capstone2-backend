@@ -1,7 +1,8 @@
 "use strict";
 
 const db = require("../db");
-
+const { sqlForPartialUpdate } = require("../helpers/sql");
+const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 
 class Recipe {
    /** Create a recipe
@@ -60,6 +61,34 @@ class Recipe {
       return recipes;
    }
 
+   /** Update recipe 
+    * 
+    * Data can include: {title, ingredients, instructions, notes}
+    * 
+    * Returns {id, title, ingredients, instructions, notes}
+    * 
+    * Throws NotFoundEror if not found
+    */
+   static async update(id, data) {
+      const { setCols, values } = sqlForPartialUpdate(data)
+
+      const handleVarIdx = "$" + (values.length + 1);
+      const querySql = `UPDATE recipes
+                        SET ${setCols}
+                        WHERE id = ${handleVarIdx}
+                        RETURNING id,
+                                  title,
+                                  cuisine,
+                                  ingredients,
+                                  instructions,
+                                  notes`
+
+      const result = await db.query(querySql, [...values, id]);
+      const recipe = result.rows[0];
+
+      if (!recipe) throw new NotFoundError(`No recipe: ${id}`)
+      return recipe;
+   }
 
 }
 

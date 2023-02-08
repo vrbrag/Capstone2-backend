@@ -1,8 +1,10 @@
 const express = require("express");
 const router = new express.Router();
-const db = require("../db")
+const jsonschema = require("jsonschema");
+const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 
 const Recipe = require("../models/recipe")
+const recipeUpdateSchema = require("../schemas/recipeUpdate.json")
 
 /** POST / {recipe} => {recipe} 
  * 
@@ -31,13 +33,28 @@ router.get("/", async function (req, res, next) {
    }
 })
 
-/** GET / {search} => {recipes: [{ title, cuisine, ingredients, instructions, notes, username }...]}  
+/** PATCH /[id] {fld1, fld2, ...} => {recipe}
  * 
- * Search filter in query:
- * - cuisine
- * - ingredients
- * - title?
+ * Patches recipe data.
+ * 
+ * fields can be: {title, cuisine, ingredients, instructions, notes}
+ * 
+ * Returns {id, title, cuisine, ingredients, instructions, notes}
 */
 
+
+router.patch("/:id", async function (req, res, next) {
+   try {
+      const validator = jsonschema.validate(req.body, recipeUpdateSchema)
+      if (!validator.valid) {
+         const errs = validator.errors.map(e => e.stack);
+         throw new BadRequestError(errs)
+      }
+      const recipe = await Recipe.update(req.params.id, req.body)
+      return res.json({ recipe })
+   } catch (err) {
+      return next(err)
+   }
+})
 
 module.exports = router;
