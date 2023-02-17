@@ -111,7 +111,7 @@ class Recipe {
     * Throws NotFoundEror if not found
     */
    static async update(id, data) {
-      const { setCols, values } = sqlForPartialUpdate(data)
+      const { setCols, values } = sqlForPartialUpdate(data, "")
 
       const handleVarIdx = "$" + (values.length + 1);
       const querySql = `UPDATE recipes

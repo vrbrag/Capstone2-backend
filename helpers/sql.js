@@ -14,12 +14,12 @@
  *     values: ['Chicken Soup', Spicy] }
  */
 
-function sqlForPartialUpdate(dataToUpdate) {
+function sqlForPartialUpdate(dataToUpdate, jsToSql) {
    const keys = Object.keys(dataToUpdate);
    if (keys.length === 0) throw new BadRequestError("No data");
 
    const cols = keys.map((colName, idx) =>
-      `"${colName}"=$${idx + 1}`,
+      `"${jsToSql[colName] || colName}"=$${idx + 1}`,
    );
 
    return {
