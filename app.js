@@ -6,15 +6,14 @@ const express = require("express");
 const app = express();
 
 const recipesRoutes = require("./routes/recipes")
+const usersRoutes = require("./routes/users")
+const authRoutes = require("./routes/auth")
 const ExpressError = require("./helpers/expressError")
 
 app.use(express.json())
 
-app.use("/auth", (req, res) => {
-   console.log('auth route works')
-   res.send('auth route works!')
-})
-// app.use("/users", )
+app.use("/auth", authRoutes)
+app.use("/users", usersRoutes)
 app.use("/recipes", recipesRoutes)
 // app.use("/favorites")
 
