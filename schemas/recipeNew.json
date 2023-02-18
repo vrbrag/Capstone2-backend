@@ -18,6 +18,9 @@
       "instructions": {
          "type": "string"
       },
+      "avgCal": {
+         "type": "number"
+      },
       "notes": {
          "type": "string"
       },

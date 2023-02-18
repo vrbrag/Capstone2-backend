@@ -15,21 +15,23 @@ class Recipe {
     * 
     * Throws BadRequestError if recipe title already exists
     */
-   static async create({ title, cuisine, ingredients, instructions, notes }) {
+   static async create({ title, cuisine, ingredients, instructions, avgCal, notes, username }) {
       const result = await db.query(
          `INSERT INTO recipes (title, 
                               cuisine, 
                               ingredients, 
                               instructions, 
+                              avg_cal,
                               notes,
                               username)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id, title, cuisine, ingredients, instructions, notes, username`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id, title, cuisine, ingredients, instructions, avg_cal AS "avgCal", notes, username`,
          [
             title,
             cuisine,
             ingredients,
             instructions,
+            avgCal,
             notes,
             username
          ],
@@ -54,6 +56,7 @@ class Recipe {
                           cuisine,
                           ingredients,
                           instructions,
+                          avg_cal AS "avgCal",
                           notes,
                           username
                   FROM recipes`
@@ -111,7 +114,10 @@ class Recipe {
     * Throws NotFoundEror if not found
     */
    static async update(id, data) {
-      const { setCols, values } = sqlForPartialUpdate(data, "")
+      const { setCols, values } = sqlForPartialUpdate(data,
+         {
+            avgCal: "avg_cal"
+         })
 
       const handleVarIdx = "$" + (values.length + 1);
       const querySql = `UPDATE recipes
@@ -122,6 +128,7 @@ class Recipe {
                                   cuisine,
                                   ingredients,
                                   instructions,
+                                  avg_cal,
                                   notes`
 
       const result = await db.query(querySql, [...values, id]);

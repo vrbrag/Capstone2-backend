@@ -19,6 +19,7 @@ CREATE TABLE recipes (
    cuisine TEXT,
    ingredients TEXT NOT NULL,
    instructions TEXT,
+   avg_cal FLOAT,
    notes TEXT,
    username VARCHAR(25)
       REFERENCES users ON DELETE CASCADE
@@ -30,4 +31,13 @@ CREATE TABLE favorites (
    title TEXT NOT NULL,
    username VARCHAR(25)
       REFERENCES users ON DELETE CASCADE
+);
+
+CREATE TABLE daily_cal (
+   username VARCHAR(30) PRIMARY KEY
+      REFERENCES users ON DELETE CASCADE,
+   tdee FLOAT,
+   daily_total FLOAT,
+   recipe_ids TEXT, 
+   date DATE
 );
