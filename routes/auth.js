@@ -3,11 +3,14 @@
 const jsonschema = require("jsonschema");
 
 const User = require("../models/user");
+
 const express = require("express");
 const router = new express.Router();
 const { createToken } = require("../helpers/tokens");
 const userAuthSchema = require("../schemas/userAuth.json");
 const userRegisterSchema = require("../schemas/userRegister.json");
+const DailyCal = require("../models/dailyCal");
+const userCalCalcSchema = require("../schemas/userCalCalc.json");
 const { BadRequestError } = require("../helpers/expressError");
 
 /** POST /auth/register: {user} => {token}
@@ -45,6 +48,11 @@ router.post("/register", async function (req, res, next) {
 
       const newUser = await User.register({ ...req.body });
       const token = createToken(newUser);
+
+      // Initalize daily calorie intake
+      const calc = await DailyCal.calculateCal({ ...req.body, userCalCalcSchema })
+      console.log(calc)
+
       return res.status(201).json({ token });
    } catch (err) {
       return next(err);

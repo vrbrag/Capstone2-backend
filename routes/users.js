@@ -5,6 +5,8 @@ const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 
 const User = require("../models/user")
 const userUpdateSchema = require("../schemas/userUpdate.json")
+const DailyCal = require("../models/dailyCal");
+const userCalCalcSchema = require("../schemas/userCalCalc.json");
 
 /** GET / => {users: [{username, firstName, lastName, email}]}
  *
@@ -71,5 +73,16 @@ router.delete("/:username", async function (req, res, next) {
       return next(err)
    }
 });
+
+router.post("/:username", async function (req, res, next) {
+   try {
+      const calc = await DailyCal.calculateCal({ ...req.body, userCalCalcSchema })
+      console.log(calc)
+      return res.json({ calc })
+
+   } catch (err) {
+      return next(err)
+   }
+})
 
 module.exports = router
