@@ -6,6 +6,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js")
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql.js");
+const { calcDailyCal } = require("../helpers/calc");
 
 class User {
 
@@ -65,6 +66,8 @@ class User {
 
       const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
+      const dailyCal = calcDailyCal(age, weight, height, gender, pal, goalWeight);
+
       const result = await db.query(
          `INSERT INTO users
             (username,
@@ -77,9 +80,10 @@ class User {
             height,
             gender,
             pal,
-            goal_weight)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-            RETURNING username, first_name AS "firstName", last_name as "lastName", email, age, weight, height, gender, pal, goal_weight AS "goalWeight"`,
+            goal_weight,
+            daily_cal)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            RETURNING username, first_name AS "firstName", last_name as "lastName", email, age, weight, height, gender, pal, goal_weight AS "goalWeight", daily_cal AS "dailyCal"`,
          [
             username,
             hashedPassword,
@@ -91,7 +95,8 @@ class User {
             height,
             gender,
             pal,
-            goalWeight
+            goalWeight,
+            dailyCal
          ]
       );
 
@@ -114,7 +119,8 @@ class User {
                 height, 
                 gender, 
                 pal, 
-                goal_weight AS "goalWeight"
+                goal_weight AS "goalWeight",
+                daily_cal AS "dailyCal"
          FROM users
          ORDER BY username`
       );
@@ -123,7 +129,7 @@ class User {
 
    /** Given a username, return data about user
     * 
-    * Returns {username, first_name, last_name, email,}
+    * Returns {username, first_name, last_name, email, age, weight, height, gender, pal, goalWeight, dailyCal}
     */
    static async get(username) {
       const userRes = await db.query(
@@ -136,7 +142,8 @@ class User {
                  height, 
                  gender, 
                  pal, 
-                 goal_weight AS "goalWeight"
+                 goal_weight AS "goalWeight",
+                 daily_cal AS "dailyCal"
          FROM users
          WHERE username = $1`,
          [username]
@@ -156,9 +163,11 @@ class User {
     * Data can include:
     *    {firstName, lastName, password, email, age, weight, height, gender, pal, goalWeight}
     * 
-    * Returns {username, firstName, lastName, email, age, weight, height, gender, pal, goalWeight}
+    * Recalculate daily_cal - update db daily_cal after user info is updated.
     * 
-    * Throws NotFoundError if not found.
+    * Returns {username, firstName, lastName, email, age, weight, height, gender, pal, goalWeight, dailyCal}
+    * 
+    * Throws NotFoundError if user not found.
     * 
     */
 
@@ -190,16 +199,54 @@ class User {
                                   height,
                                   gender,
                                   pal,
-                                  goal_weight AS "goalWeight"`;
+                                  goal_weight AS "goalWeight",
+                                  daily_cal AS "dailyCal"`;
 
       const result = await db.query(querySql, [...values, username]);
-      const user = result.rows[0];
+      const userUpdate = result.rows[0];
 
-      if (!user) throw new NotFoundError(`No user: ${username}`);
+      if (!userUpdate) throw new NotFoundError(`No user: ${username}`);
 
-      delete user.password;
+      delete userUpdate.password;
+
+      // Recalculate daily_cal
+      const userRes = await db.query(
+         `SELECT age, 
+                 weight, 
+                 height, 
+                 gender, 
+                 pal, 
+                 goal_weight AS "goalWeight"
+         FROM users
+         WHERE username = $1`,
+         [username]
+      );
+      // console.log(userRes.rows[0])
+      const { age, weight, height, gender, pal, goalWeight } = userRes.rows[0];
+
+      const recalc = calcDailyCal(age, weight, height, gender, pal, goalWeight)
+      // console.log(recalc)
+
+      const resultRecalc = await db.query(
+         `UPDATE users
+          SET daily_cal = $1
+          WHERE username = ${usernameVarIdx}
+          RETURNING username,
+                     first_name AS "firstName",
+                     last_name AS "lastName",
+                     email,
+                     age,
+                     weight, 
+                     height,
+                     gender,
+                     pal,
+                     goal_weight AS "goalWeight",
+                     daily_cal AS "dailyCal"`,
+         [recalc, username]
+      );
+      const user = resultRecalc.rows[0];
       return user;
-   }
+   };
 
    /** DELETE /[username] 
     * 
@@ -217,7 +264,7 @@ class User {
       const user = result.rows[0];
 
       if (!user) throw new NotFoundError(`No user: ${username}`);
-   }
+   };
 }
 
 module.exports = User

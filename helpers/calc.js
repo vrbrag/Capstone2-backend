@@ -31,7 +31,8 @@ function calcTDEE(age, weight, height, gender, pal) {
 
 function calcDailyCal(weight, height, age, gender, pal, goal_weight) {
 
-   let daily_cal = calcTDEE(weight, height, age, gender, pal);
+   let daily_cal = parseFloat(calcTDEE(weight, height, age, gender, pal)).toFixed(2)
+   // let daily_cal = calcTDEE(weight, height, age, gender, pal);
 
    // offset daily calorie intake by 500 cals
    // depending on goal_weight

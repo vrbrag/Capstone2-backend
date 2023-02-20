@@ -9,8 +9,9 @@ CREATE TABLE users (
    weight INTEGER NOT NULL,
    height INTEGER NOT NULL,
    gender TEXT NOT NULL,
-   pal NUMERIC NOT NULL,
-   goal_weight TEXT NOT NULL
+   pal FLOAT NOT NULL,
+   goal_weight TEXT NOT NULL,
+   daily_cal FLOAT
 );
 
 CREATE TABLE recipes (
@@ -36,7 +37,6 @@ CREATE TABLE favorites (
 CREATE TABLE daily_cal (
    username VARCHAR(30) PRIMARY KEY
       REFERENCES users ON DELETE CASCADE,
-   cal_goal FLOAT,
    daily_total FLOAT,
    recipe_ids TEXT, 
    date DATE
