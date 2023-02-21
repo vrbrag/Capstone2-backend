@@ -8,6 +8,7 @@ const app = express();
 const recipesRoutes = require("./routes/recipes")
 const usersRoutes = require("./routes/users")
 const authRoutes = require("./routes/auth")
+const favoritesRoutes = require("./routes/favorites")
 const ExpressError = require("./helpers/expressError")
 
 app.use(express.json())
@@ -15,7 +16,7 @@ app.use(express.json())
 app.use("/auth", authRoutes)
 app.use("/users", usersRoutes)
 app.use("/recipes", recipesRoutes)
-// app.use("/favorites")
+app.use("/favorites", favoritesRoutes)
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {

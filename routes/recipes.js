@@ -3,6 +3,7 @@ const router = new express.Router();
 const jsonschema = require("jsonschema");
 const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 
+const Favorite = require("../models/favorite")
 const Recipe = require("../models/recipe")
 const recipeUpdateSchema = require("../schemas/recipeUpdate.json")
 const recipeNewSchema = require("../schemas/recipeNew.json")
@@ -13,7 +14,7 @@ const recipeNewSchema = require("../schemas/recipeNew.json")
  * 
  * Returns { title, cuisine, ingredients, instructions, notes, username }
 */
-router.post("/", async function (req, res, next) {
+router.post("/add", async function (req, res, next) {
    try {
       const validator = jsonschema.validate(req.body, recipeNewSchema);
       if (!validator.valid) {
@@ -38,7 +39,23 @@ router.get("/", async function (req, res, next) {
    } catch (err) {
       return next(err)
    }
-})
+});
+
+/** POST /{recipe} => {favorite recipe} 
+ * 
+ * recipe data {recipeId, title, username}
+ * 
+ * Returns {recipeId, title, username }
+*/
+
+router.post("/", async function (req, res, next) {
+   try {
+      const favorite = await Favorite.save(req.body)
+      return res.json({ favorite })
+   } catch (err) {
+      return next(err)
+   }
+});
 
 /** PATCH /[id] {fld1, fld2, ...} => {recipe}
  * 
