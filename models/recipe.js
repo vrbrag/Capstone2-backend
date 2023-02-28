@@ -85,7 +85,7 @@ class Recipe {
       }
 
       query += " ORDER BY title";
-      console.log(query, queryValues)
+      // console.log(query, queryValues)
       const recipesRes = await db.query(query, queryValues);
       return recipesRes.rows;
 
@@ -103,6 +103,32 @@ class Recipe {
 
       // const recipes = result.rows;
       // return recipes;
+   }
+
+   /** Given a recipe id, return data about recipe.
+    * 
+    * Returns {id, title, cuisine, ingredients, instructions}
+    * 
+    * Throws NotFoundError if not found.
+    */
+   static async get(id) {
+      const recipeRes = await db.query(
+         `SELECT id,
+                 title,
+                 cuisine,
+                 ingredients,
+                 instructions,
+                 avg_cal
+         FROM recipes
+         WHERE id = $1`,
+         [id]
+      );
+
+      const recipe = recipeRes.rows[0];
+      console.log('inside recipe', recipe)
+      if (!recipe) throw new NotFoundError(`No recipe: ${id}`);
+
+      return recipe;
    }
 
    /** Update recipe 

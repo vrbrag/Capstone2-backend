@@ -41,19 +41,47 @@ router.get("/", async function (req, res, next) {
    }
 });
 
-/** POST /{recipe} => {favorite recipe} 
+/** GET /[recipeId] => { recipe }
  * 
- * recipe data {recipeId, title, username}
+ * Returns { id, title, cuisine, ingredients, instructions }
  * 
- * Returns {recipeId, title, username }
-*/
-
-router.post("/", async function (req, res, next) {
+ * Authorization: none
+ */
+router.get("/:id", async function (req, res, next) {
    try {
-      const favorite = await Favorite.save(req.body)
-      return res.json({ favorite })
+      const recipe = await Recipe.get(req.params.id);
+      return res.json({ recipe });
    } catch (err) {
       return next(err)
+   }
+});
+
+/** POST /{recipe} => {favorite recipe} 
+ * 
+ * recipe data {recipeId, username}
+ * 
+ * Returns {recipeId, title, username }
+ *  - pulls title from recipeId
+ * 
+ * ***** want to be able to favorite a recipe 
+ *       on list of all recipes.....
+ *       
+ *       check if recipe is already favorited 
+ *       by user in FE using State - 
+ *       const [favoritedIds, setFavoritedIds] 
+ *       = useState(new Set([]))
+ * *****
+*/
+
+router.post("/:username/:id", async function (req, res, next) {
+   try {
+      const recipeId = +req.params.id;
+      // console.log(recipeId)
+      // console.log(req.params.username)
+      const favorite = await Favorite.save(req.params.username, recipeId)
+      return res.json({ favorite });
+   } catch (err) {
+      return next(err);
    }
 });
 

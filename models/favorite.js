@@ -1,6 +1,7 @@
 "use strict";
 
 const db = require("../db");
+const Recipe = require("../models/recipe");
 const { NotFoundError } = require("../helpers/expressError");
 
 
@@ -27,11 +28,34 @@ class Favorites {
 
    /** Save recipe to favorites
     * 
-    * data should be {title, recipe_id, username}
+    * data should be {recipe_id, username}
+    *  -- title is retreived useing the recipe_id
     * 
     * Returns { recipe_id, title, username}
+    * 
     */
-   static async save({ recipeId, title, username }) {
+   static async save(username, recipeId) {
+      // console.log(username, recipeId)
+      const preCheck = await db.query(
+         `SELECT id
+         FROM recipes
+         WHERE id = $1`, [recipeId]
+      );
+      const recipe = preCheck.rows[0];
+      console.log('inside save:', recipe)
+      if (!recipe) throw new NotFoundError(`No recipe: ${recipeId}`)
+
+      const preCheck2 = await db.query(
+         `SELECT username
+         FROM users
+         WHERE username = $1`, [username]
+      );
+      const user = preCheck2.rows[0];
+      if (!user) throw new NotFoundError(`No username: ${username}`);
+
+      const recipeRes = await Recipe.get(recipeId)
+      const title = recipeRes.title;
+      console.log(title)
       const result = await db.query(
          `INSERT INTO favorites (recipe_id,
                                  title, 
