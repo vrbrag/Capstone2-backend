@@ -35,10 +35,11 @@ CREATE TABLE favorites (
       REFERENCES users ON DELETE CASCADE
 );
 
-CREATE TABLE daily_cal (
+CREATE TABLE calorie_log (
    username VARCHAR(30) PRIMARY KEY
       REFERENCES users ON DELETE CASCADE,
    daily_total FLOAT,
    recipe_ids TEXT, 
-   date DATE
+   date DATE,
+   is_goal BOOLEAN NOT NULL DEFAULT FALSE
 );
