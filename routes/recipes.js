@@ -30,6 +30,13 @@ router.post("/add", async function (req, res, next) {
 })
 
 /** GET / => {recipes: [{ title, cuisine, ingredients, instructions, notes, username }...]} 
+ * 
+ * Can search by:
+ *  - title
+ *  - cuisine
+ *  - ingredients
+ * 
+ * Authorization: none
 */
 router.get("/", async function (req, res, next) {
    const q = req.query;
@@ -56,34 +63,21 @@ router.get("/:id", async function (req, res, next) {
    }
 });
 
-/** POST /{recipe} => {favorite recipe} 
+/** GET /{recipes: [{ title, cuisine, ingredients, instructions, notes, username }...]}
  * 
- * recipe data {recipeId, username}
+ * Returns { id, title, cuisine, ingredients, instructions }
  * 
- * Returns {recipeId, title, username }
- *  - pulls title from recipeId
- * 
- * ***** want to be able to favorite a recipe 
- *       on list of all recipes.....
- *       
- *       check if recipe is already favorited 
- *       by user in FE using State - 
- *       const [favoritedIds, setFavoritedIds] 
- *       = useState(new Set([]))
- * *****
-*/
-
-router.post("/:username/:id", async function (req, res, next) {
+ * Authorization: ensureCurrentUser
+ */
+router.get("/:username", async function (req, res, next) {
    try {
-      const recipeId = +req.params.id;
-      // console.log(recipeId)
-      // console.log(req.params.username)
-      const favorite = await Favorite.save(req.params.username, recipeId)
-      return res.json({ favorite });
+      const recipe = await Recipe.get(req.params.username);
+      return res.json({ recipe });
    } catch (err) {
-      return next(err);
+      return next(err)
    }
 });
+
 
 /** PATCH /[id] {fld1, fld2, ...} => {recipe}
  * 
@@ -92,17 +86,17 @@ router.post("/:username/:id", async function (req, res, next) {
  * fields can be: {title, cuisine, ingredients, instructions, notes}
  * 
  * Returns {id, title, cuisine, ingredients, instructions, notes}
+ * 
+ * Authorization: ensureCurrentUser
 */
-
-
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:username/:id", async function (req, res, next) {
    try {
       const validator = jsonschema.validate(req.body, recipeUpdateSchema);
       if (!validator.valid) {
          const errs = validator.errors.map(e => e.stack);
          throw new BadRequestError(errs);
       }
-      const recipe = await Recipe.update(req.params.id, req.body);
+      const recipe = await Recipe.update(req.params.username, req.params.id, req.body);
       return res.json({ recipe });
    } catch (err) {
       return next(err)
@@ -111,9 +105,9 @@ router.patch("/:id", async function (req, res, next) {
 
 /** DELETE /[id] => {deleted: id} 
  * 
- * 
+ * Authorization: ensureCurrentUser
 */
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:username/:id", async function (req, res, next) {
    try {
       await Recipe.remove(req.params.id);
       return res.json({ deleted: req.params.id });

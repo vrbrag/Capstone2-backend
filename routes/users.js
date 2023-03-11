@@ -3,8 +3,9 @@ const router = new express.Router();
 const jsonschema = require("jsonschema");
 const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 
-const User = require("../models/user")
-const userUpdateSchema = require("../schemas/userUpdate.json")
+const User = require("../models/user");
+const userUpdateSchema = require("../schemas/userUpdate.json");
+const Favorite = require('../models/favorite');
 
 /** GET / => {users: [{username, firstName, lastName, email}]}
  *
@@ -67,6 +68,20 @@ router.delete("/:username", async function (req, res, next) {
    try {
       await User.remove(req.params.username);
       return res.json({ deleted: req.params.username });
+   } catch (err) {
+      return next(err)
+   }
+});
+
+/** GET / => {favorites: [{title, recipe_id, username}...]}
+ *
+ * Returns list of all of current user's favorited recipes.
+ * 
+ */
+router.get("/:username/favorites", async function (req, res, next) {
+   try {
+      const favorites = await Favorite.findAll(req.params.username)
+      return res.json({ favorites })
    } catch (err) {
       return next(err)
    }
