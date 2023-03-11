@@ -130,6 +130,10 @@ class User {
    /** Given a username, return data about user
     * 
     * Returns {username, first_name, last_name, email, age, weight, height, gender, pal, goalWeight, dailyCal}
+    * 
+    * where recipes is {id, title, cuisine, ingredients, instructions}
+    * 
+    * Throws NotFoundError if user not found
     */
    static async get(username) {
       const userRes = await db.query(
@@ -152,6 +156,15 @@ class User {
       const user = userRes.rows[0];
 
       if (!user) throw new NotFoundError(`No user: ${username}`);
+
+      const userRecipesRes = await db.query(
+         `SELECT r.id
+          FROM recipes AS r
+          WHERE r.username = $1`,
+         [username]
+      );
+
+      user.recipes = userRecipesRes.rows.map(r => r.id)
 
       return user;
    }

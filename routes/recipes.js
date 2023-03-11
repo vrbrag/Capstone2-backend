@@ -63,22 +63,6 @@ router.get("/:id", async function (req, res, next) {
    }
 });
 
-/** GET /{recipes: [{ title, cuisine, ingredients, instructions, notes, username }...]}
- * 
- * Returns { id, title, cuisine, ingredients, instructions }
- * 
- * Authorization: ensureCurrentUser
- */
-router.get("/:username", async function (req, res, next) {
-   try {
-      const recipe = await Recipe.get(req.params.username);
-      return res.json({ recipe });
-   } catch (err) {
-      return next(err)
-   }
-});
-
-
 /** PATCH /[id] {fld1, fld2, ...} => {recipe}
  * 
  * Patches recipe data.
