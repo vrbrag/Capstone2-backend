@@ -16,6 +16,7 @@ class Recipe {
     * Throws BadRequestError if recipe title already exists
     */
    static async create({ title, cuisine, ingredients, instructions, avgCal, notes, username }) {
+      const ingArray = [...ingredients]
       const result = await db.query(
          `INSERT INTO recipes (title, 
                               cuisine, 
@@ -29,7 +30,7 @@ class Recipe {
          [
             title,
             cuisine,
-            ingredients,
+            ingArray,
             instructions,
             avgCal,
             notes,
@@ -63,7 +64,7 @@ class Recipe {
       let whereExpressions = [];
       let queryValues = [];
 
-      const { title, cuisine, ingredient } = searchFilters;
+      const { title, cuisine, ingredients } = searchFilters;
 
       if (title) {
          queryValues.push(`%${title}%`);
@@ -75,9 +76,9 @@ class Recipe {
          whereExpressions.push(`cuisine ILIKE $${queryValues.length}`);
       }
 
-      if (ingredient) {
-         queryValues.push(`%${ingredient}%`);
-         whereExpressions.push(`ingredients ILIKE $${queryValues.length}`);
+      if (ingredients) {
+         queryValues.push(`%${ingredients}%`);
+         whereExpressions.push(`array_to_string(ingredients, ', ') ILIKE $${queryValues.length}`);
       }
 
       if (whereExpressions.length > 0) {
@@ -139,7 +140,15 @@ class Recipe {
     * 
     * Throws NotFoundEror if not found
     */
-   static async update(id, data) {
+   static async update(username, id, data) {
+      const preCheck = await db.query(
+         `SELECT username
+          FROM recipes
+          WHERE id = $1 and username = $2`, [id, username]);
+      const userRecipe = preCheck.rows[0];
+
+      if (!userRecipe) throw new NotFoundError(`You didn't create recipe: ${id}`);
+
       const { setCols, values } = sqlForPartialUpdate(data,
          {
             avgCal: "avg_cal"

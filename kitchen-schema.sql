@@ -18,7 +18,7 @@ CREATE TABLE recipes (
    id SERIAL PRIMARY KEY,
    title TEXT NOT NULL,
    cuisine TEXT,
-   ingredients TEXT NOT NULL,
+   ingredients TEXT[] NOT NULL,
    instructions TEXT,
    avg_cal FLOAT,
    notes TEXT,
