@@ -142,7 +142,7 @@ class Recipe {
     */
    static async update(username, id, data) {
       const preCheck = await db.query(
-         `SELECT username
+         `SELECT id, username
           FROM recipes
           WHERE id = $1 and username = $2`, [id, username]);
       const userRecipe = preCheck.rows[0];
@@ -163,7 +163,7 @@ class Recipe {
                                   cuisine,
                                   ingredients,
                                   instructions,
-                                  avg_cal,
+                                  avg_cal AS "avgCal",
                                   notes`
 
       const result = await db.query(querySql, [...values, id]);
