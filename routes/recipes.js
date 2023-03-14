@@ -67,7 +67,7 @@ router.get("/:id", async function (req, res, next) {
  * 
  * Patches recipe data.
  * 
- * fields can be: {title, cuisine, ingredients, instructions, notes}
+ * fields to update can be: {title, cuisine, ingredients, instructions, notes}
  * 
  * Returns {id, title, cuisine, ingredients, instructions, notes}
  * 
@@ -92,7 +92,7 @@ router.patch("/:id", async function (req, res, next) {
  * 
  * Authorization: ensureCurrentUser
 */
-router.delete("/:username/:id", async function (req, res, next) {
+router.delete("/:id", async function (req, res, next) {
    try {
       await Recipe.remove(req.params.id);
       return res.json({ deleted: req.params.id });
