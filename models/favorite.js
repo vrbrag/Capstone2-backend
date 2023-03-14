@@ -61,7 +61,7 @@ class Favorites {
          `INSERT INTO favorites (recipe_id, 
                                  username)
          VALUES ($1, $2)
-         RETURNING id, recipe_id AS "recipeId", username`,
+         RETURNING recipe_id AS "recipeId", username`,
          [
             recipeId,
             username

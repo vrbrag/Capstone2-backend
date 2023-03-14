@@ -13,14 +13,13 @@ const Favorite = require("../models/favorite")
  * Returns {recipeId, title, username }
  *  - pulls title from recipeId
  * 
- * ***** want to be able to favorite a recipe 
- *       on list of all recipes.....
- *       
+ * ***** 
  *       check if recipe is already favorited 
  *       by user in FE using State - 
  *       const [favoritedIds, setFavoritedIds] 
  *       = useState(new Set([]))
  * *****
+ * Authorization: ensureLoggedIn
 */
 
 // /:id
@@ -28,8 +27,7 @@ const Favorite = require("../models/favorite")
 
 router.post("/:id", async function (req, res, next) {
    try {
-      const recipeId = +req.params.id;
-      const favorite = await Favorite.save(req.body.username, recipeId)
+      const favorite = await Favorite.save(req.body.username, req.params.id)
       return res.json({ favorite });
    } catch (err) {
       return next(err);
@@ -38,9 +36,9 @@ router.post("/:id", async function (req, res, next) {
 
 /** DELETE /[id] => {deleted: id} 
  * 
- * Authorization required: ensureCurrentUser.....
+ * Authorization required: ensureCurrentUser
 */
-router.delete("/:username/:id", async function (req, res, next) {
+router.delete("/:id", async function (req, res, next) {
    try {
       await Favorite.remove(req.params.id);
       return res.json({ deleted: req.params.id })
