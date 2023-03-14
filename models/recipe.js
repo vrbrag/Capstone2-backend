@@ -16,7 +16,7 @@ class Recipe {
     * Throws BadRequestError if recipe title already exists
     */
    static async create({ title, cuisine, ingredients, instructions, avgCal, notes, username }) {
-      const ingArray = [...ingredients]
+      const ingArray = ingredients.split(', ')
       const result = await db.query(
          `INSERT INTO recipes (title, 
                               cuisine, 
