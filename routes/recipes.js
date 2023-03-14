@@ -73,14 +73,15 @@ router.get("/:id", async function (req, res, next) {
  * 
  * Authorization: ensureCurrentUser
 */
-router.patch("/:username/:id", async function (req, res, next) {
+router.patch("/:id", async function (req, res, next) {
    try {
       const validator = jsonschema.validate(req.body, recipeUpdateSchema);
       if (!validator.valid) {
          const errs = validator.errors.map(e => e.stack);
          throw new BadRequestError(errs);
       }
-      const recipe = await Recipe.update(req.params.username, req.params.id, req.body);
+      const { username } = req.body;
+      const recipe = await Recipe.update(username, req.params.id, req.body);
       return res.json({ recipe });
    } catch (err) {
       return next(err)

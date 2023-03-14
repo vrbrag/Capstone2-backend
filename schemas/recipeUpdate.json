@@ -23,8 +23,14 @@
       },
       "notes": {
          "type": "string"
+      },
+      "username": {
+         "type": "string"
       }
    },
    "additionalProperties": false,
-   "required": []
+   "required": [
+      "title",
+      "username"
+   ]
 }

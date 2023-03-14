@@ -148,7 +148,7 @@ class Recipe {
       const userRecipe = preCheck.rows[0];
 
       if (!userRecipe) throw new NotFoundError(`You didn't create recipe: ${id}`);
-
+      console.log(`inside patch data`, data)
       const { setCols, values } = sqlForPartialUpdate(data,
          {
             avgCal: "avg_cal"
@@ -164,7 +164,8 @@ class Recipe {
                                   ingredients,
                                   instructions,
                                   avg_cal AS "avgCal",
-                                  notes`
+                                  notes,
+                                  username`
 
       const result = await db.query(querySql, [...values, id]);
       const recipe = result.rows[0];
