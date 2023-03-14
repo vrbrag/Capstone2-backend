@@ -12,12 +12,13 @@ class Favorites {
     */
    static async findAll(username) {
       const result = await db.query(
-         `SELECT id,
-                 title,
-                 recipe_id,
-                 username
+         `SELECT favorites.recipe_id,
+                 favorites.username,
+                 r.title
          FROM favorites
-         WHERE username = $1`,
+         JOIN recipes AS r 
+         ON favorites.recipe_id = r.id
+         WHERE favorites.username = $1`,
          [username]
       );
 
@@ -57,14 +58,12 @@ class Favorites {
       const title = recipeRes.title;
       console.log(title)
       const result = await db.query(
-         `INSERT INTO favorites (recipe_id,
-                                 title, 
+         `INSERT INTO favorites (recipe_id, 
                                  username)
-         VALUES ($1, $2, $3)
+         VALUES ($1, $2)
          RETURNING id, recipe_id AS "recipeId", username`,
          [
             recipeId,
-            title,
             username
          ]
       );

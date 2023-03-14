@@ -41,7 +41,6 @@ VALUES (1,
         'Note: This is also a fake recipe.',
         'testuser2');
 
-INSERT INTO favorites (recipe_id, title, username)
+INSERT INTO favorites (recipe_id, username)
 VALUES (1, 
-        'Recipe Title 1', 
         'testuser1')

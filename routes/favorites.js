@@ -26,10 +26,10 @@ const Favorite = require("../models/favorite")
 // /:id
 // (req.params.id, req.body.username)
 
-router.post("/:username/:id", async function (req, res, next) {
+router.post("/:id", async function (req, res, next) {
    try {
       const recipeId = +req.params.id;
-      const favorite = await Favorite.save(req.params.username, recipeId)
+      const favorite = await Favorite.save(req.body.username, recipeId)
       return res.json({ favorite });
    } catch (err) {
       return next(err);

@@ -27,10 +27,8 @@ CREATE TABLE recipes (
 );
 
 CREATE TABLE favorites (
-   id SERIAL PRIMARY KEY,
    recipe_id INTEGER
       REFERENCES recipes ON DELETE CASCADE,
-   title TEXT NOT NULL,
    username VARCHAR(25)
       REFERENCES users ON DELETE CASCADE
 );
