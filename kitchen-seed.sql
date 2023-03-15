@@ -25,12 +25,13 @@ VALUES ('testuser1',
         1.75,
         'gain');
 
-INSERT INTO recipes (id, title, cuisine, ingredients, instructions, notes, username)
+INSERT INTO recipes (id, title, cuisine, ingredients, instructions, avg_cal, notes, username)
 VALUES (1,
         'Recipe Title 1: Chicken Sandwich',
         'Cuisine 1: American',
         '{"Cheese", "Bread"}',
         'Instructions here',
+        1000,
         'Note: This is a fake recipe.',
         'testuser1'),
         (2,
@@ -38,6 +39,7 @@ VALUES (1,
         'Cuisine 2: Japanese',
         '{"Rice", "Seaweed", "Ahi"}',
         'Instructions here',
+        1000,
         'Note: This is also a fake recipe.',
         'testuser2');
 

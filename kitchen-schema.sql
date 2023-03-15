@@ -22,22 +22,22 @@ CREATE TABLE recipes (
    instructions TEXT,
    avg_cal FLOAT,
    notes TEXT,
-   username VARCHAR(25)
+   username VARCHAR(30)
       REFERENCES users ON DELETE CASCADE
 );
 
 CREATE TABLE favorites (
    recipe_id INTEGER
       REFERENCES recipes ON DELETE CASCADE,
-   username VARCHAR(25)
+   username VARCHAR(30)
       REFERENCES users ON DELETE CASCADE
 );
 
 CREATE TABLE calorie_log (
-   username VARCHAR(30) PRIMARY KEY
+   username VARCHAR(30) 
       REFERENCES users ON DELETE CASCADE,
    daily_total FLOAT,
-   recipe_ids TEXT, 
-   date DATE,
+   recipe_ids TEXT[] NOT NULL, 
+   date DATE NOT NULL DEFAULT CURRENT_DATE,
    is_goal BOOLEAN NOT NULL DEFAULT FALSE
 );

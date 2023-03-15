@@ -2,7 +2,8 @@
 
 const db = require("../db");
 const { calcDailyCal } = require("../helpers/calc");
-const { BadRequestError, NotFoundError } = require("../helpers/expressError");
+const { NotFoundError, BadRequestError } = require("../helpers/expressError");
+const User = require("./user");
 
 class DailyCal {
 
@@ -33,7 +34,44 @@ class DailyCal {
    }
 
    /** UPDATE and keep log of daily calorie intake */
+   static async getRecipeAvgCal(recipeId) {
+      console.log(`getRecipeAvgCal method: ${recipeId}`)
+      const result = await db.query(
+         `SELECT avg_cal
+         FROM recipes
+         WHERE id = $1`,
+         [recipeId]
+      )
 
+      const recipeCalories = result.rows[0]
+      // console.log(`Retrieved recipe calories:`, recipeCalories)
+      if (!recipeCalories) throw new NotFoundError(`Cannot get avgCal of recipe: ${recipeId}`)
+
+      console.log(`recipeCalories Value:`, recipeCalories.avg_cal);
+      return recipeCalories.avg_cal;
+   }
+
+   /** Check if users daily calorie goal is met 
+    * 
+    * if daily_cal > todaysCalorieTotal 
+    *    goal is not met => return false 
+    */
+   static async checkDailyGoal(username, todaysCalorieTotal) {
+      console.log(`checkDailyGoal:`, username, todaysCalorieTotal)
+
+      const result = await User.get(username)
+      console.log(`Result user:`, result)
+
+      const userDailyCal = result.dailyCal
+      console.log(userDailyCal)
+      console.log(`userDailyCal:`, userDailyCal)
+
+      if (userDailyCal > todaysCalorieTotal) {
+         return false;
+      } else {
+         return true;
+      };
+   }
 };
 
 module.exports = DailyCal;
