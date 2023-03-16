@@ -60,13 +60,13 @@ class DailyCal {
       console.log(`checkDailyGoal:`, username, todaysCalorieTotal)
 
       const result = await User.get(username)
-      console.log(`Result user:`, result)
+      // console.log(`Result user:`, result)
 
       const userDailyCal = result.dailyCal
       console.log(userDailyCal)
       console.log(`userDailyCal:`, userDailyCal)
 
-      if (userDailyCal > todaysCalorieTotal) {
+      if (userDailyCal >= todaysCalorieTotal) {
          return false;
       } else {
          return true;

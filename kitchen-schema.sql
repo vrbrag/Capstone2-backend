@@ -34,6 +34,7 @@ CREATE TABLE favorites (
 );
 
 CREATE TABLE calorie_log (
+   id SERIAL PRIMARY KEY,
    username VARCHAR(30) 
       REFERENCES users ON DELETE CASCADE,
    daily_total FLOAT,

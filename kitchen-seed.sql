@@ -45,4 +45,13 @@ VALUES (1,
 
 INSERT INTO favorites (recipe_id, username)
 VALUES (1, 
-        'testuser1')
+        'testuser1');
+
+INSERT INTO calorie_log(username, daily_total, recipe_ids, date, is_goal)
+VALUES (
+        'testuser2',
+        1000,
+        '{"1"}',
+        '2023-03-15',
+        'false'
+);
