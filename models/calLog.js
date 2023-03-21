@@ -5,14 +5,33 @@ const DailyCal = require("./dailyCal");
 
 class CalorieLog {
 
+   // static async log(username, recipeId, date) {
+   //    const preCheck = await DailyCal.preCheck(username, date);
+
+   //    // const id = res.json({ preCheck })
+   //    console.log(`preCheck`, preCheck)
+   //    // console.log(`in route: preCheck`, id)
+   //    if (preCheck) {
+   //       console.log(`ADD LOG`)
+   //       const log = await CalorieLog.add(username, recipeId, id);
+
+   //       return log;
+   //    } else {
+   //       console.log(`CREATE LOG`)
+   //       const log = await CalorieLog.create(username, recipeId, date);
+
+   //       return log;
+
+   //    }
+   // }
    /** Create new daily calorie log
     * 
     */
    static async create(username, recipeId, date) {
-      // console.log(username, recipeId, date)
+      console.log(username, recipeId, date)
       // INSERT log into database calLog
       const dailyTotal = await DailyCal.getRecipeAvgCal(recipeId)
-      // console.log(`DailyTotal:`, dailyTotal)
+      console.log(`DailyTotal:`, dailyTotal)
 
       // Check if user's daily calorie goal is met
 
@@ -53,18 +72,18 @@ class CalorieLog {
     * 
     */
 
-   static async add(username, recipeId, date) {
+   static async add(username, recipeId, id) {
       // Add avgCal of each Recipe in today's log
-      const preCheck = await db.query(
-         `SELECT id
-         FROM calorie_log
-         WHERE username = $1`,
-         [
-            username
-         ]
-      );
-      const id = preCheck.rows[0].id
-      console.log(`preCheck id=${id}`)
+      // const preCheck = await db.query(
+      //    `SELECT id
+      //    FROM calorie_log
+      //    WHERE username = $1`,
+      //    [
+      //       username
+      //    ]
+      // );
+      // const id = preCheck.rows[0].id
+      // console.log(`preCheck id=${id}`)
 
       const getRecipes = await db.query(
          `SELECT recipe_ids AS "recipeIds"
@@ -97,7 +116,8 @@ class CalorieLog {
              daily_total = $2,
              is_goal = $3
          WHERE id = $4
-         RETURNING username,
+         RETURNING id,
+                   username,
                    daily_total AS "dailyTotal",
                    recipe_ids AS "recipeIds",
                    date,

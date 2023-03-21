@@ -44,7 +44,7 @@ class DailyCal {
       )
 
       const recipeCalories = result.rows[0]
-      // console.log(`Retrieved recipe calories:`, recipeCalories)
+      console.log(`Retrieved recipe calories:`, recipeCalories)
       if (!recipeCalories) throw new NotFoundError(`Cannot get avgCal of recipe: ${recipeId}`)
 
       console.log(`recipeCalories Value:`, recipeCalories.avg_cal);
@@ -63,7 +63,7 @@ class DailyCal {
       // console.log(`Result user:`, result)
 
       const userDailyCal = result.dailyCal
-      console.log(userDailyCal)
+      // console.log(userDailyCal)
       console.log(`userDailyCal:`, userDailyCal)
 
       if (userDailyCal >= todaysCalorieTotal) {
@@ -72,6 +72,33 @@ class DailyCal {
          return true;
       };
    }
+
+   /** Pre Check if user already has a calorie log for today 
+    * 
+    * data {username, date}
+    * 
+    * RETURNS {id}
+    */
+   static async preCheck(username, date) {
+
+      const preCheck = await db.query(
+         `SELECT id
+         FROM calorie_log
+         WHERE username = $1 and date = $2`,
+         [
+            username,
+            date
+         ]
+      );
+
+      if (!preCheck.rows[0]) {
+         return false
+      } else {
+         const id = preCheck.rows[0].id
+         console.log(`preCheck id=${id}`);
+         return id
+      }
+   };
 };
 
 module.exports = DailyCal;
