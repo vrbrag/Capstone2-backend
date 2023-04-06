@@ -21,7 +21,7 @@ CREATE TABLE recipes (
    ingredients TEXT[] NOT NULL,
    instructions TEXT,
    avg_cal FLOAT,
-   notes TEXT,
+   notes TEXT DEFAULT NULL,
    username VARCHAR(30)
       REFERENCES users ON DELETE CASCADE
 );

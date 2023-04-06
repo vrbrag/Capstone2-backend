@@ -4,7 +4,8 @@ const router = new express.Router();
 const { NotFoundError } = require("../helpers/expressError");
 
 const Recipe = require("../models/recipe")
-const Variation = require("../models/variation")
+const Variation = require("../models/variation");
+const VariationWrapper = require("../models/variationWrapper");
 
 /** GET /[recipeId] = { variations : [] } 
  * 
@@ -68,6 +69,24 @@ router.get("/recipe/:id", async function (req, res, next) {
 
    } catch (err) {
       return next(err)
+   }
+})
+
+/** POST /[variationId] = {favorite recipe}
+ * 
+ * recipe data {username, title, cuisine, ingredients, avgCal}
+ * 
+ * Returns favorite: {{recipeId, title, username }}
+ * 
+ * Authorization: ensureLoggedIn
+*/
+router.post("/favorite/:id", async function (req, res, next) {
+   try {
+      const favorite = await VariationWrapper.favorite(req.params.id, req.body.username)
+
+      return res.json({ favorite })
+   } catch (err) {
+      return next(err);
    }
 })
 

@@ -192,6 +192,35 @@ class Recipe {
 
       if (!recipe) throw new NotFoundError(`No recipe: ${id}`)
    }
+
+   /** Save variation recipe
+    * 
+    * data
+    */
+   static async saveVar(title, cuisine, ingredients, instructions, avgCal, username) {
+
+      const result = await db.query(
+         `INSERT INTO recipes (title, 
+                              cuisine, 
+                              ingredients, 
+                              instructions, 
+                              avg_cal,
+                              username)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, title, cuisine, ingredients, instructions, avg_cal AS "avgCal", username`,
+         [
+            title,
+            cuisine,
+            ingredients,
+            instructions,
+            avgCal,
+            username
+         ],
+      );
+      const recipe = result.rows[0]
+
+      return recipe;
+   }
 }
 
 module.exports = Recipe;
