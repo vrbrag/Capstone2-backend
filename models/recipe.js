@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { sqlForPartialUpdate } = require("../helpers/sql");
-const { BadRequestError, NotFoundError } = require("../helpers/expressError");
+const { NotFoundError } = require("../helpers/expressError");
 
 class Recipe {
    /** Create a recipe
@@ -90,20 +90,6 @@ class Recipe {
       const recipesRes = await db.query(query, queryValues);
       return recipesRes.rows;
 
-      // const result = await db.query(
-      //    `SELECT 
-      //       id,
-      //       title,
-      //       cuisine,
-      //       ingredients,
-      //       instructions,
-      //       notes,
-      //       username
-      //    FROM recipes`
-      // );
-
-      // const recipes = result.rows;
-      // return recipes;
    }
 
    /** Given a recipe id, return data about recipe.
@@ -126,8 +112,8 @@ class Recipe {
       );
 
       const recipe = recipeRes.rows[0];
-      console.log('inside recipe', recipe)
-      if (!recipe) throw new NotFoundError(`No recipe: ${id}`);
+      // console.log('get recipe', recipe)
+      // if (!recipe) throw new NotFoundError(`No recipe: ${id}`);
 
       return recipe;
    }
@@ -197,18 +183,20 @@ class Recipe {
     * 
     * data
     */
-   static async saveVar(title, cuisine, ingredients, instructions, avgCal, username) {
+   static async saveVar(id, title, cuisine, ingredients, instructions, avgCal, username) {
 
       const result = await db.query(
-         `INSERT INTO recipes (title, 
+         `INSERT INTO recipes (id,
+                              title, 
                               cuisine, 
                               ingredients, 
                               instructions, 
                               avg_cal,
                               username)
-         VALUES ($1, $2, $3, $4, $5, $6)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING id, title, cuisine, ingredients, instructions, avg_cal AS "avgCal", username`,
          [
+            id,
             title,
             cuisine,
             ingredients,

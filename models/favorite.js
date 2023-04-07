@@ -36,14 +36,14 @@ class Favorites {
     * 
     */
    static async save(username, recipeId) {
-      // console.log(username, recipeId)
+
       const preCheck = await db.query(
          `SELECT id
          FROM recipes
          WHERE id = $1`, [recipeId]
       );
       const recipe = preCheck.rows[0];
-      console.log('inside save:', recipe)
+      // console.log('inside save:', recipe)
       if (!recipe) throw new NotFoundError(`No recipe: ${recipeId}`)
 
       const preCheck2 = await db.query(
@@ -54,9 +54,10 @@ class Favorites {
       const user = preCheck2.rows[0];
       if (!user) throw new NotFoundError(`No username: ${username}`);
 
-      const recipeRes = await Recipe.get(recipeId)
-      const title = recipeRes.title;
-      console.log(title)
+      // const recipeRes = await Recipe.get(recipeId)
+      // const title = recipeRes.title;
+      // console.log(title)
+
       const result = await db.query(
          `INSERT INTO favorites (recipe_id, 
                                  username)

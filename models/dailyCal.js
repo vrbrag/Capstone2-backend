@@ -35,7 +35,7 @@ class DailyCal {
 
    /** UPDATE and keep log of daily calorie intake */
    static async getRecipeAvgCal(recipeId) {
-      console.log(`getRecipeAvgCal method: ${recipeId}`)
+      // console.log(`getRecipeAvgCal method: ${recipeId}`)
       const result = await db.query(
          `SELECT avg_cal
          FROM recipes
@@ -44,10 +44,10 @@ class DailyCal {
       )
 
       const recipeCalories = result.rows[0]
-      console.log(`Retrieved recipe calories:`, recipeCalories)
+      // console.log(`Retrieved recipe calories:`, recipeCalories)
       if (!recipeCalories) throw new NotFoundError(`Cannot get avgCal of recipe: ${recipeId}`)
 
-      console.log(`recipeCalories Value:`, recipeCalories.avg_cal);
+      // console.log(`recipeCalories Value:`, recipeCalories.avg_cal);
       return recipeCalories.avg_cal;
    }
 
@@ -95,7 +95,7 @@ class DailyCal {
          return false
       } else {
          const id = preCheck.rows[0].id
-         console.log(`preCheck id=${id}`);
+         // console.log(`preCheck id=${id}`);
          return id
       }
    };

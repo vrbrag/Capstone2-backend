@@ -11,8 +11,6 @@ const VariationWrapper = require("../models/variationWrapper");
  * 
  * Returns [{api_id, title, image, imageType},...]
  * 
- * WRAPPER ???? need to return avg_call too....
- * 
  * Authorization: ensureCurrentUser
 */
 router.get("/bycuisine/:id", async function (req, res, next) {
@@ -72,19 +70,42 @@ router.get("/recipe/:id", async function (req, res, next) {
    }
 })
 
-/** POST /[variationId] = {favorite recipe}
+/** POST /[variation recipe] = { favorite }
  * 
- * recipe data {username, title, cuisine, ingredients, avgCal}
+ *  *** req.body = recipe data after getVarRecipe
  * 
- * Returns favorite: {{recipeId, title, username }}
+ * recipe data {id, title, cuisine, ingredients, instructions, avg_cal, username}
+ * 
+ * Returns "favorite": {{recipeId, title, username }}
  * 
  * Authorization: ensureLoggedIn
 */
-router.post("/favorite/:id", async function (req, res, next) {
+router.post("/favorite", async function (req, res, next) {
    try {
-      const favorite = await VariationWrapper.favorite(req.params.id, req.body.username)
+      const favorite = await VariationWrapper.favorite(req.body)
 
       return res.json({ favorite })
+   } catch (err) {
+      return next(err);
+   }
+});
+
+/** POST /[variation recipe] = { log } 
+ * 
+ *   *** req.body = recipe data after getVarRecipe
+ * 
+ * recipe data {id, title, cuisine, ingredients, instructions, avg_cal, username}
+ * 
+ * Returns "log": {id, username, dailyTotal, recipeIds, date, isGoal}
+ * 
+*/
+router.post("/log", async function (req, res, next) {
+   try {
+
+      const log = await VariationWrapper.log(req.body);
+
+      return res.json({ log });
+
    } catch (err) {
       return next(err);
    }

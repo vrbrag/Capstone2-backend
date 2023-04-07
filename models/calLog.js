@@ -94,7 +94,7 @@ class CalorieLog {
 
       const recipes = getRecipes.rows[0].recipeIds
 
-      console.log(`recipes=${recipes}, type=`, typeof (recipes));
+      // console.log(`recipes=${recipes}, type=`, typeof (recipes));
 
       const recipeIds = [...recipes, recipeId];
       // const recipeIdsCalories = recipeIds.map(r => (await DailyCal.getRecipeAvgCal(r)))

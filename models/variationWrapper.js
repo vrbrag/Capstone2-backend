@@ -1,28 +1,69 @@
 "use strict";
-const db = require("../db");
 
 const Recipe = require("./recipe");
 const Favorites = require("./favorite");
-const Variation = require("./variation");
+const CalLogWrapper = require("./calLogWrapper")
 
-const BASE_URL = `https://api.spoonacular.com/recipes/`
-const api_key = `2d3d04ef784549cb818fdb563237f29c`
-// 2770a7c333e14ed397442fb4d705d3de
 
+/** Favorite and Log Variation Recipe
+ * 
+ * variation recipes suggested from spoonacular API, user can:
+ *    - favorite a recipe
+ *    - log calories to daily calorie tracker
+ *    - BOTH actions will also save recipe to db Recipes if it's not already saved.
+ * 
+ */
 class VariationWrapper {
 
-   static async favorite(id, username) {
+   /** Favorite variation recipe
+    *    - preChecks/saves recipe to db Recipes 
+    *    - If user unfavorites it, they can find recipe in future again.
+    * 
+    */
+   static async favorite({ id, title, cuisine, ingredients, instructions, avg_cal, username }) {
 
-      const variation = await Variation.getVarRecipe(id);
+      // check if variation is already saved in db Recipes
+      // if not, save to Recipes
+      const preCheck = await Recipe.get(id);
 
-      const toRecipes = await Recipe.saveVar(variation.title, variation.cuisine, variation.ingredients, variation.instructions, variation.avg_cal, username);
+      if (!preCheck) {
+         const toRecipes = await Recipe.saveVar(id, title, cuisine, ingredients, instructions, avg_cal, username);
 
-      const recipeId = toRecipes.id;
-      console.log(recipeId)
+         // const recipeId = toRecipes.id;
+         // console.log(`RecipeId: ${recipeId}`)
+         // console.log(`Id: ${id}`)
+      }
 
-      const toFavorites = await Favorites.save(username, recipeId)
+      // save variation recipe to user's Favorites
+      const favorite = await Favorites.save(username, id);
 
-      return toFavorites;
+      return favorite;
+   }
+
+   /** Log variation recipe
+    * 
+    *    - preChecks/saves recipe to db Recipes 
+    *    - If user unfavorites it, they can find recipe in future again.
+    */
+   static async log({ id, title, cuisine, ingredients, instructions, avg_cal, username }) {
+
+      // check if variation is already saved in db Recipes
+      // if not, save to Recipes
+      const preCheck = await Recipe.get(id);
+
+      if (!preCheck) {
+         const toRecipes = await Recipe.saveVar(id, title, cuisine, ingredients, instructions, avg_cal, username);
+
+         // const recipeId = toRecipes.id;
+         // console.log(`RecipeId: ${recipeId}`)
+         // console.log(`Id: ${id}`)
+      }
+
+      let currentDate = new Date().toJSON().slice(0, 10);
+
+      const log = await CalLogWrapper.log(username, id, currentDate);
+
+      return log;
    }
 };
 

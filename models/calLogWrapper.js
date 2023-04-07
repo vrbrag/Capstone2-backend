@@ -10,8 +10,9 @@ class CalLogWrapper {
       const preCheck = await DailyCal.preCheck(username, date);
 
       // const id = res.json({ preCheck })
-      console.log(`preCheck =`, preCheck)
+      // console.log(`preCheck =`, preCheck)
       // console.log(`in route: preCheck`, id)
+
       if (preCheck) {
          console.log(`ADD LOG`)
          let id = preCheck;
