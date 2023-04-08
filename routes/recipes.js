@@ -1,9 +1,8 @@
 const express = require("express");
 const router = new express.Router();
 const jsonschema = require("jsonschema");
-const { BadRequestError, NotFoundError } = require("../helpers/expressError");
+const { BadRequestError } = require("../helpers/expressError");
 
-const Favorite = require("../models/favorite")
 const Recipe = require("../models/recipe")
 const recipeUpdateSchema = require("../schemas/recipeUpdate.json")
 const recipeNewSchema = require("../schemas/recipeNew.json")
@@ -67,6 +66,8 @@ router.get("/:id", async function (req, res, next) {
  * 
  * Patches recipe data.
  * 
+ *  **data must include { title, username }
+ * 
  * fields to update can be: {title, cuisine, ingredients, instructions, notes}
  * 
  * Returns {id, title, cuisine, ingredients, instructions, notes}
@@ -80,8 +81,8 @@ router.patch("/:id", async function (req, res, next) {
          const errs = validator.errors.map(e => e.stack);
          throw new BadRequestError(errs);
       }
-      const { username } = req.body;
-      const recipe = await Recipe.update(username, req.params.id, req.body);
+      // const { username } = req.body;
+      const recipe = await Recipe.update(req.params.id, req.body);
       return res.json({ recipe });
    } catch (err) {
       return next(err)

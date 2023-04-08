@@ -126,7 +126,10 @@ class Recipe {
     * 
     * Throws NotFoundEror if not found
     */
-   static async update(username, id, data) {
+   static async update(id, data) {
+
+      const { username } = data;
+
       const preCheck = await db.query(
          `SELECT id, username
           FROM recipes
