@@ -6,6 +6,7 @@ const { NotFoundError } = require("../helpers/expressError");
 const Recipe = require("../models/recipe")
 const Variation = require("../models/variation");
 const VariationWrapper = require("../models/variationWrapper");
+const { ensureCorrectUser } = require("../middleware/auth")
 
 /** GET /[recipeId] = { variations : [] } 
  * 
@@ -80,7 +81,7 @@ router.get("/recipe/:id", async function (req, res, next) {
  * 
  * Authorization: ensureLoggedIn
 */
-router.post("/favorite", async function (req, res, next) {
+router.post("/favorite", ensureCorrectUser, async function (req, res, next) {
    try {
       const favorite = await VariationWrapper.favorite(req.body)
 
@@ -99,7 +100,7 @@ router.post("/favorite", async function (req, res, next) {
  * Returns "log": {id, username, dailyTotal, recipeIds, date, isGoal}
  * 
 */
-router.post("/log", async function (req, res, next) {
+router.post("/log", ensureCorrectUser, async function (req, res, next) {
    try {
 
       const log = await VariationWrapper.log(req.body);

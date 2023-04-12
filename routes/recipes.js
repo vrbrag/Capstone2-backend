@@ -6,6 +6,7 @@ const { BadRequestError } = require("../helpers/expressError");
 const Recipe = require("../models/recipe")
 const recipeUpdateSchema = require("../schemas/recipeUpdate.json")
 const recipeNewSchema = require("../schemas/recipeNew.json")
+const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth")
 
 /** POST / {recipe} => {recipe} 
  * 
@@ -13,7 +14,7 @@ const recipeNewSchema = require("../schemas/recipeNew.json")
  * 
  * Returns { title, cuisine, ingredients, instructions, notes, username }
 */
-router.post("/add", async function (req, res, next) {
+router.post("/add", ensureLoggedIn, async function (req, res, next) {
    try {
       const validator = jsonschema.validate(req.body, recipeNewSchema);
       if (!validator.valid) {
@@ -74,7 +75,7 @@ router.get("/:id", async function (req, res, next) {
  * 
  * Authorization: ensureCurrentUser
 */
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:id", ensureCorrectUser, async function (req, res, next) {
    try {
       const validator = jsonschema.validate(req.body, recipeUpdateSchema);
       if (!validator.valid) {
@@ -93,7 +94,7 @@ router.patch("/:id", async function (req, res, next) {
  * 
  * Authorization: ensureCurrentUser
 */
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", ensureCorrectUser, async function (req, res, next) {
    try {
       await Recipe.remove(req.params.id);
       return res.json({ deleted: req.params.id });

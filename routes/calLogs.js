@@ -4,12 +4,13 @@ const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 const CalorieLog = require("../models/calLog");
 const CalLogWrapper = require("../models/calLogWrapper");
 const DailyCal = require("../models/dailyCal");
+const { ensureCorrectUser } = require("../middleware/auth")
 
 /** POST /{calLog: [{username, dailyTotal, recipeIds, date, isGoal}]}
  * 
  * Authorization: ensureCurrentUser
  */
-router.post("/log", async function (req, res, next) {
+router.post("/log", ensureCorrectUser, async function (req, res, next) {
    try {
       let currentDate = new Date().toJSON().slice(0, 10);
 

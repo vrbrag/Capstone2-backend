@@ -2,7 +2,7 @@ const express = require("express");
 const router = new express.Router();
 
 const Favorite = require("../models/favorite")
-
+const { ensureCorrectUser } = require("../middleware/auth")
 
 
 /** SAVE recipe to favorites => see recipe routes  */
@@ -25,7 +25,7 @@ const Favorite = require("../models/favorite")
 // /:id
 // (req.params.id, req.body.username)
 
-router.post("/:id", async function (req, res, next) {
+router.post("/:id", ensureCorrectUser, async function (req, res, next) {
    try {
       const favorite = await Favorite.save(req.body.username, req.params.id)
       return res.json({ favorite });
@@ -38,7 +38,7 @@ router.post("/:id", async function (req, res, next) {
  * 
  * Authorization required: ensureCurrentUser
 */
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", ensureCorrectUser, async function (req, res, next) {
    try {
       await Favorite.remove(req.params.id);
       return res.json({ deleted: req.params.id })

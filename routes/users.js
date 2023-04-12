@@ -6,6 +6,7 @@ const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 const User = require("../models/user");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const Favorite = require('../models/favorite');
+const { ensureCorrectUser } = require("../middleware/auth")
 
 /** GET / => {users: [{username, firstName, lastName, email}]}
  *
@@ -27,7 +28,7 @@ router.get("/", async function (req, res, next) {
  * 
  * 
  */
-router.get("/:username", async function (req, res, next) {
+router.get("/:username", ensureCorrectUser, async function (req, res, next) {
    try {
       const user = await User.get(req.params.username);
       return res.json({ user })
@@ -45,7 +46,7 @@ router.get("/:username", async function (req, res, next) {
 * 
 Authorization: ....
 */
-router.patch("/:username", async function (req, res, next) {
+router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
    try {
       const validator = jsonschema.validate(req.body, userUpdateSchema);
       if (!validator.valid) {
@@ -64,7 +65,7 @@ router.patch("/:username", async function (req, res, next) {
  * 
  * Authorization required: same user as: username
 */
-router.delete("/:username", async function (req, res, next) {
+router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
    try {
       await User.remove(req.params.username);
       return res.json({ deleted: req.params.username });
@@ -78,7 +79,7 @@ router.delete("/:username", async function (req, res, next) {
  * Returns list of all of current user's favorited recipes.
  * 
  */
-router.get("/:username/favorites", async function (req, res, next) {
+router.get("/:username/favorites", ensureCorrectUser, async function (req, res, next) {
    try {
       const favorites = await Favorite.findAll(req.params.username)
       return res.json({ favorites })
