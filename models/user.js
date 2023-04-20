@@ -1,10 +1,9 @@
 "use strict";
 
 const bcrypt = require("bcrypt");
-const { UnauthorizedError } = require("../../../Projects/React-jobly/jobly/react-jobly/backend/expressError.js");
 const { BCRYPT_WORK_FACTOR } = require("../config.js")
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../helpers/expressError");
+const { BadRequestError, NotFoundError, UnauthorizedError } = require("../helpers/expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql.js");
 const { calcDailyCal } = require("../helpers/calc");
 
@@ -66,7 +65,7 @@ class User {
 
       const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
-      const dailyCal = calcDailyCal(age, weight, height, gender, pal, goalWeight);
+      const dailyCal = await calcDailyCal(age, weight, height, gender, pal, goalWeight);
 
       const result = await db.query(
          `INSERT INTO users
