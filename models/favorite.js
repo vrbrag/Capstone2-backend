@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const Recipe = require("../models/recipe");
-const { NotFoundError } = require("../helpers/expressError");
+const { NotFoundError, BadRequestError } = require("../helpers/expressError");
 
 
 class Favorites {
@@ -57,6 +57,14 @@ class Favorites {
       // const recipeRes = await Recipe.get(recipeId)
       // const title = recipeRes.title;
       // console.log(title)
+
+      const preCheck3 = await db.query(
+         `SELECT recipe_id, username
+          FROM favorites
+          WHERE recipe_id = $1 and username = $2`, [recipeId, username]
+      )
+      const favoriteRecipe = preCheck3.rows[0];
+      if (favoriteRecipe) throw new BadRequestError(`You already favorited this recipe: ${recipeId}`)
 
       const result = await db.query(
          `INSERT INTO favorites (recipe_id, 

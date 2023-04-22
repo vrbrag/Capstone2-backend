@@ -165,6 +165,15 @@ class User {
 
       user.recipes = userRecipesRes.rows.map(r => r.id)
 
+      const userFavoritesRes = await db.query(
+         `SELECT f.recipe_id
+          FROM favorites AS f
+          WHERE f.username = $1`,
+         [username]
+      );
+
+      user.favorites = userFavoritesRes.rows.map(f => f.recipe_id)
+
       return user;
    }
 
