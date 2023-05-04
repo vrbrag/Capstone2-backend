@@ -105,7 +105,9 @@ class Recipe {
                  cuisine,
                  ingredients,
                  instructions,
-                 avg_cal
+                 avg_cal AS "avgCal",
+                 notes,
+                 username
          FROM recipes
          WHERE id = $1`,
          [id]

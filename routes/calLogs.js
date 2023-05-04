@@ -4,13 +4,28 @@ const { BadRequestError, NotFoundError } = require("../helpers/expressError");
 const CalorieLog = require("../models/calLog");
 const CalLogWrapper = require("../models/calLogWrapper");
 const DailyCal = require("../models/dailyCal");
-const { ensureCorrectUser } = require("../middleware/auth")
+const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth")
+
+/** GET / user's log history
+ * 
+ */
+router.get("/:username", async function (req, res, next) {
+   console.log("Helloooooo")
+   try {
+      console.log("getLogs here")
+      const logs = await CalorieLog.get(req.params.username)
+      // console.log("getLogs here")
+      return res.json({ logs })
+   } catch (err) {
+      return next(err);
+   }
+})
 
 /** POST /{calLog: [{username, dailyTotal, recipeIds, date, isGoal}]}
  * 
  * Authorization: ensureCurrentUser
  */
-router.post("/log", ensureCorrectUser, async function (req, res, next) {
+router.post("/log", ensureLoggedIn, async function (req, res, next) {
    try {
       let currentDate = new Date().toJSON().slice(0, 10);
 
@@ -34,7 +49,9 @@ router.post("/log", ensureCorrectUser, async function (req, res, next) {
 
       //    return res.json({ log });
 
-      const log = await CalLogWrapper.log(req.body.username, req.body.recipeId, currentDate);
+
+      const { username, recipeId } = req.body
+      const log = await CalLogWrapper.log(username, recipeId, currentDate);
 
       return res.json({ log });
 

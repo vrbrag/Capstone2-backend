@@ -22,7 +22,6 @@ router.post("/add", ensureLoggedIn, async function (req, res, next) {
          throw new BadRequestError(errs)
       }
       const recipe = await Recipe.create(req.body)
-      // console.log(recipe)
       return res.status(201).json({ recipe })
    } catch (err) {
       return next(err)

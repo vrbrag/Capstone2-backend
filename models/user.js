@@ -174,6 +174,17 @@ class User {
 
       user.favorites = userFavoritesRes.rows.map(f => f.recipe_id)
 
+      const userLogsRes = await db.query(
+         `SELECT logs.id
+          FROM calorie_log AS logs
+          WHERE logs.username = $1
+          ORDER BY logs.date DESC
+          LIMIT 1`,
+         [username]
+      );
+
+      user.logs = userLogsRes.rows.map(l => l.id)
+
       return user;
    }
 

@@ -134,6 +134,30 @@ class CalorieLog {
 
       return log;
    }
+
+   /** Given username
+    * 
+    * get ALL logs
+    * 
+    * Returns {id, username, daily_total, [recipe_ids], date, is_goal}
+    */
+   static async get(username) {
+      const logRes = await db.query(
+         `SELECT id,
+                 username,
+                 daily_total AS "dailyTotal",
+                 recipe_ids AS "recipeIds",
+                 TO_CHAR(date, 'Mon dd, yyyy') AS "date",
+                 is_goal AS "isGoal"
+         FROM calorie_log
+         WHERE username = $1
+         ORDER BY date DESC`,
+         [username]
+      );
+
+      const logs = logRes.rows;
+      return logs;
+   }
 };
 
 module.exports = CalorieLog;
