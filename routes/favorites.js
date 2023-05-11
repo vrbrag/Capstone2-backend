@@ -2,7 +2,7 @@ const express = require("express");
 const router = new express.Router();
 
 const Favorite = require("../models/favorite")
-const { ensureCorrectUser } = require("../middleware/auth")
+const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth")
 
 
 /** SAVE recipe to favorites => see recipe routes  */
@@ -22,10 +22,8 @@ const { ensureCorrectUser } = require("../middleware/auth")
  * Authorization: ensureLoggedIn
 */
 
-// /:id
-// (req.params.id, req.body.username)
 
-router.post("/:username/:id", async function (req, res, next) {
+router.post("/:username/:id", ensureLoggedIn, async function (req, res, next) {
    try {
       const recipeId = +req.params.id
       const favorite = await Favorite.save(req.params.username, recipeId)
@@ -39,10 +37,10 @@ router.post("/:username/:id", async function (req, res, next) {
  * 
  * Authorization required: ensureCurrentUser
 */
-router.delete("/:id", ensureCorrectUser, async function (req, res, next) {
+router.delete("/:username/:id", ensureCorrectUser, async function (req, res, next) {
    try {
-      const recipeId = +req.params.id
-      await Favorite.remove(recipeId);
+      const recipeId = req.params.id
+      await Favorite.remove(req.params.username, recipeId);
       return res.json({ deleted: recipeId })
    } catch (err) {
       return next(err)

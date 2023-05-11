@@ -10,9 +10,7 @@ const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth")
  * 
  */
 router.get("/:username", async function (req, res, next) {
-   console.log("Helloooooo")
    try {
-      console.log("getLogs here")
       const logs = await CalorieLog.get(req.params.username)
       // console.log("getLogs here")
       return res.json({ logs })

@@ -87,17 +87,17 @@ class Favorites {
     * 
     * Throws NotFoundError if recipe not found.
     */
-   static async remove(id) {
+   static async remove(username, recipeId) {
       const result = await db.query(
          `DELETE 
          FROM favorites
-         WHERE id = $1
-         RETURNING id`,
-         [id]
+         WHERE recipe_id = $1 and username = $2
+         RETURNING recipe_id`,
+         [recipeId, username]
       );
       const favorite = result.rows[0];
 
-      if (!favorite) throw new NotFoundError(`No favorite recipe: ${id}`)
+      if (!favorite) throw new NotFoundError(`No favorite recipe: ${recipeId}`)
    }
 };
 

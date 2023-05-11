@@ -262,7 +262,7 @@ class User {
       const resultRecalc = await db.query(
          `UPDATE users
           SET daily_cal = $1
-          WHERE username = ${usernameVarIdx}
+          WHERE username = $2
           RETURNING username,
                      first_name AS "firstName",
                      last_name AS "lastName",
