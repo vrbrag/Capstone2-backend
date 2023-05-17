@@ -11,6 +11,15 @@ class Favorites {
     * Returns [{title, recipe_id}]
     */
    static async findAll(username) {
+
+      const preCheck = await db.query(
+         `SELECT username
+          FROM users
+          WHERE username = $1`, [username]);
+      const user = preCheck.rows[0];
+
+      if (!user) throw new NotFoundError(`No username: ${username}`);
+
       const result = await db.query(
          `SELECT favorites.recipe_id,
                  favorites.username,
