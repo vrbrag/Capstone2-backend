@@ -223,7 +223,7 @@ describe("DELETE /users/:username", function () {
    });
 });
 
-/************************************** POST /users/:username/jobs/:id */
+/************************************** GET /users/:username/favorites */
 
 describe("GET /users/:username/favorites", function () {
 

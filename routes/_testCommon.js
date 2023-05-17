@@ -64,6 +64,7 @@ async function commonBeforeAll() {
    })
 
    recipeIds[0] = (recipe1.id);
+   recipeIds[1] = (recipe2.id)
 
    favoriteIds[0] = (recipe2.id);
 

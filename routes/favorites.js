@@ -23,7 +23,7 @@ const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth")
 */
 
 
-router.post("/:username/:id", ensureLoggedIn, async function (req, res, next) {
+router.post("/:username/:id", ensureCorrectUser, async function (req, res, next) {
    try {
       const recipeId = +req.params.id
       const favorite = await Favorite.save(req.params.username, recipeId)
