@@ -9,7 +9,7 @@ const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth")
 /** GET / user's log history
  * 
  */
-router.get("/:username", async function (req, res, next) {
+router.get("/:username", ensureCorrectUser, async function (req, res, next) {
    try {
       const logs = await CalorieLog.get(req.params.username)
       // console.log("getLogs here")
