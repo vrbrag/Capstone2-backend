@@ -13,7 +13,7 @@ const authRoutes = require("./routes/auth")
 const favoritesRoutes = require("./routes/favorites")
 const calLogRoutes = require("./routes/calLogs")
 const variationsRoutes = require("./routes/variations")
-const ExpressError = require("./helpers/expressError")
+const {ExpressError} = require("./helpers/expressError")
 
 app.use(cors());
 const morgan = require("morgan");

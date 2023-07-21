@@ -9,7 +9,7 @@ const PORT = +process.env.PORT || 3005;
 
 // Use dev database, testing database, or via env var, production database
 function getDatabaseUri() {
-   return (process.env.NODE_ENV === "test") ? "kitchen_test" : process.env.DATABASE_URL || "kitchen";
+   return (process.env.NODE_ENV === "test") ? "kitchen_test" : process.env.DATABASE_URL || "postgresql:///kitchen";
 }
 
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
